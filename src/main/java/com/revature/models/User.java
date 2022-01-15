@@ -15,4 +15,25 @@ public class User
 		this.id = id;
 	}
 	
+	public String getUsername()
+	{
+		return this.username;
+	}
+	
+	public int getType()
+	{
+		return this.type;
+	}
+	
+	public String toString()
+	{
+		String result = "Username: " + this.username + " password: " + this.password + " id: " + this.id;
+		return result;
+	}
+	
+	public int getId()
+	{
+		return this.id;
+	}
+	
 }

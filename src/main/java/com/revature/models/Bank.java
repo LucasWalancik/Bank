@@ -1,7 +1,9 @@
 package com.revature.models;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
+import com.revature.dao.AccountDAO;
 import com.revature.dao.UserDAO;
 
 
@@ -28,6 +30,26 @@ public class Bank
 		return userOption;
 	}
 	
+	
+	private int getId()
+	{
+		int id = -1;
+		do {
+			System.out.println( "Please enter an id: " );
+			while( !userInput.hasNextInt() )
+			{
+				userInput.next();
+				printSomethingBad( "A valid id is an integer, not whatever that is" );
+			}
+			id = userInput.nextInt();
+			userInput.nextLine();
+			if( id <= 0) 
+			{
+				printSomethingBad( "A valid id has to be greater than 0" );
+			}
+		}while( id <= 0 );
+		return id;
+	}
 	
 	private int getMenuOption( int highestOption )
 	{
@@ -61,7 +83,7 @@ public class Bank
 	
 	
 	
-	public void signIn()
+	public User signIn()
 	{
 		printMenu( "Logging in" );
 		String username = "";
@@ -72,26 +94,15 @@ public class Bank
 			username = userInput.nextLine();
 			System.out.println( "Enter your password" );
 			String password = userInput.nextLine();
-			loggedInUser = validateCredentials( username, password );
+			loggedInUser = UserDAO.validateCredentials( username, password );
 			if( loggedInUser == null )
 			{
-				System.out.println();
-				System.out.println( "###############################################" );
-				System.out.println( "Your username and password do not match." );
-				System.out.println( "Please try again" );
-				System.out.println( "###############################################" );
-				System.out.println();
+				printSomethingBad( "Your username and password do not match.", "Please try again" );
 			}
 		}while( loggedInUser == null );
 		
-		System.out.println();
-		System.out.println();
-		System.out.println();
-		System.out.println();
-		System.out.println("----------------------------------------------------------");
-		System.out.println( "Welcome back " + loggedInUser.username );
-		System.out.println("----------------------------------------------------------");
-		System.out.println();
+		//printMenu( "Welcome back " + loggedInUser.getUsername() );
+		return loggedInUser;
 	}
 	
 	
@@ -165,7 +176,108 @@ public class Bank
 		return password;
 	}
 	
+	public void customerMenu()
+	{
+		printMenu( "| Account Details |", "| " + loggedInUser + " |" );
+		System.out.println( "1. See your accounts" );
+		System.out.println( "2. Apply for new account" );
+		System.out.println( "3. Exit" );
+		int userOption = getMenuOption( 3 );
+		switch( userOption )
+		{
+		case 1:
+			showCustomerAccounts();
+			break;
+			
+		case 2:
+			applyForAccount();
+			break;
+			
+		case 3:
+			System.exit( 0 );
+		}
+	}
 	
+	
+	
+	
+	private void applyForAccount()
+	{
+		boolean userWantsToLeave = false;
+		while( ! userWantsToLeave)
+		{
+			printMenu( "Applying for an account" );
+			System.out.println( "1. Apply for personal account" );
+			System.out.println( "2. Apply for joint account" );
+			System.out.println( "3. Exit" );
+			int userOption = getMenuOption( 3 );
+			switch( userOption )
+			{
+			case 1:
+				applyForPersonalAccount();
+				break;
+				
+			case 2:
+				applyForJointAccount();
+				break;
+				
+			case 3:
+				userWantsToLeave = true;
+				break;
+			}
+		}
+		
+	}
+	
+	
+	private void applyForPersonalAccount()
+	{
+		printMenu( "Applying for personal account" );
+		System.out.println( "Enter name of your account: " );
+		String accountName = userInput.nextLine();
+		Account newAccount = new Account( accountName, 0, 0 );
+		AccountDAO.saveAccount( newAccount, loggedInUser.getId() );
+		System.out.println( "You have succesfully applied for a personal account" );
+	}
+	
+	private void applyForJointAccount()
+	{
+		printMenu( "Applying for joint account" );
+		System.out.println( "Enter name of your account: " );
+		String accountName = userInput.nextLine();
+		System.out.println( "Enter id of a customer that will be second owner of your bank account: " );
+		int secondOwnerId;
+		boolean secondOwnerExists = false;
+		do
+		{
+			secondOwnerId = getId();
+			secondOwnerExists = UserDAO.doesCustomerExist( secondOwnerId );
+			if( ! secondOwnerExists )
+			{
+				printSomethingBad( "There is no customer with such id" );
+			}
+		} while( ! secondOwnerExists );
+
+		Account newJointAccount = new Account( accountName, 0, 0 );
+		AccountDAO.saveAccount( newJointAccount, loggedInUser.getId(), secondOwnerId );
+		printSomethingGood( "You have succesfully applied for a joint account" );
+		//System.out.println( "You have succesfully applied for a joint account" );
+	}
+	
+	
+	private void showCustomerAccounts()
+	{
+		ArrayList<Account> loggedInUserAccounts = AccountDAO.getUserAccounts( loggedInUser.getId() );
+		if( loggedInUserAccounts == null )
+		{
+			printSomethingBad( "You have no accounts" );
+			return;
+		}
+		for( Account userAccount : loggedInUserAccounts )
+		{
+			System.out.println( userAccount );
+		}
+	}
 	
 	private boolean validateUsername( String username )
 	{
@@ -196,7 +308,18 @@ public class Bank
 		}
 		System.out.println( "###############################################" );
 		System.out.println();
-		
+	}
+	
+	private void printSomethingGood( String...whatToPrint )
+	{
+		System.out.println();
+		System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+		for( String sentence : whatToPrint )
+		{
+			System.out.println( sentence );
+		}
+		System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+		System.out.println();
 	}
 	
 	

@@ -1,6 +1,7 @@
 package com.revature.console;
 
 import com.revature.models.Bank;
+import com.revature.models.User;
 
 public class Driver
 {
@@ -15,7 +16,22 @@ public class Driver
 			break;
 			
 		case 2:
-			//LWBank.sigIn();
+			User loggedInUser = LWBank.signIn();
+			int userType = loggedInUser.getType();
+			switch( userType )
+			{
+			case 1:
+				LWBank.customerMenu();
+				break;
+				
+			case 2:
+				//LWBank.employeeMenu();
+				break;
+				
+			case 999:
+				//LWBank.adminMenu();
+				break;
+			}
 			break;
 			
 		case 3:

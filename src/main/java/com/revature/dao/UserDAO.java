@@ -33,10 +33,58 @@ public class UserDAO
 		return true;
 	}
 	
-	public static User signIn( String username, String password )
+	
+	public static boolean doesCustomerExist( int userId )
 	{
-		
+		Connection c = ConnectionManager.getConnection();
+		PreparedStatement checkIfUserExists;
+		try {
+			checkIfUserExists = c.prepareStatement( "SELECT * FROM users WHERE id = ? and type = 1" );
+			checkIfUserExists.setInt( 1, userId );
+			ResultSet results = checkIfUserExists.executeQuery();
+			return results.next();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
 	}
+	
+	public static User validateCredentials( String usernameToValidate, String passwordToValidate )
+	{
+		try 
+		{
+			Connection c = ConnectionManager.getConnection();
+			PreparedStatement preparedStatement;
+			preparedStatement = c.prepareStatement("SELECT * FROM users ");
+			ResultSet results = preparedStatement.executeQuery();
+			// ResultSet cursor is set BEFORE the first row!!!!!!!!!!!!
+			boolean isThereAnyResult = results.next();
+			if(  isThereAnyResult == false )// There are no more rows
+			{
+				return null;
+			}
+			else
+			{
+				String username = results.getString( "username" );
+				String password = results.getString( "password" );
+				int type = results.getInt( "type" );
+				int id = results.getInt( "id" );
+				User loggedInUser = new User( username, password, type, id );
+				return loggedInUser;
+			}
+		}
+		catch (SQLException e)
+		{
+			System.out.println( "Something terrible happened with database while validating credentials" );
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
+	
 	
 	public static void signUp( String username, String password, int type )
 	{
@@ -54,7 +102,6 @@ public class UserDAO
 		}
 		catch (SQLException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
