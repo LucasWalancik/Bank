@@ -12,6 +12,36 @@ import com.revature.models.Account;
 public class AccountDAO
 {
 	
+	
+	
+	public static boolean deposit( double amount, int accountId )
+	{
+
+		try
+		{
+			Connection c = ConnectionManager.getConnection();
+			String sql = "UPDATE accounts ";
+			sql += "SET funds = ? ";
+			sql += "WHERE id = ?";
+			PreparedStatement statement = c.prepareStatement( sql );
+			statement.setDouble( 1, amount );
+			statement.setInt( 2, accountId );
+			int numberOfUpdatedRows = statement.executeUpdate();
+			if( numberOfUpdatedRows <= 0 )
+			{
+				System.out.println( "Something went wrong" );
+				return false;
+			}
+			return true;
+		}
+		catch (SQLException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	public static ArrayList<Account> getUserAccounts( int userId )
 	{
 		try

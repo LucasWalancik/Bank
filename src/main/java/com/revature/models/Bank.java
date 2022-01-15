@@ -267,17 +267,102 @@ public class Bank
 	
 	private void showCustomerAccounts()
 	{
-		ArrayList<Account> loggedInUserAccounts = AccountDAO.getUserAccounts( loggedInUser.getId() );
-		if( loggedInUserAccounts == null )
+		ArrayList<Account> userAccounts = AccountDAO.getUserAccounts( loggedInUser.getId() );
+		if( userAccounts == null )
 		{
 			printSomethingBad( "You have no accounts" );
 			return;
 		}
-		for( Account userAccount : loggedInUserAccounts )
+		printMenu( "List of your accounts" );
+		int accountCounter = 0;
+		for( Account userAccount : userAccounts )
 		{
-			System.out.println( userAccount );
+			System.out.println(++accountCounter +". " + userAccount );
+		}
+		System.out.println();
+		System.out.println( ++accountCounter + ". Exit" );
+		int userOption = getMenuOption( accountCounter );
+		if( userOption == accountCounter )
+		{
+			return;
+		}
+		Account chosenAccount = userAccounts.get( userOption - 1 );
+		accountMenu( chosenAccount );
+	}
+	
+	
+	private void accountMenu( Account account )
+	{
+		if( account.getIsAccepted() == 0 )
+		{
+			printSomethingBad( "This account is not active ");
+			return;
+		}
+		printMenu( account.toString() );
+		System.out.println( "1. Deposit money" );
+		System.out.println( "2. Withdraw money" );
+		System.out.println( "3. Transfer money" );
+		System.out.println( "4. Return to accounts list" );
+		int userOption = getMenuOption( 4 );
+		switch( userOption )
+		{
+		case 1:
+			deposit( account );
+			break;
+			
+		case 2:
+			//withdraw( account );
+			break;
+			
+		case 3:
+			//transfer
+			break;
+			
+		case 4:
+			return;
 		}
 	}
+	
+	
+	private void deposit( Account account )
+	{
+		printMenu( "Depositing" );
+		double amount = getMoney( Double.POSITIVE_INFINITY );
+		if( ! AccountDAO.deposit( amount + account.getFunds(), account.getId() ) )
+		{
+			printSomethingBad( "Something went wrong. Please try again" );
+		}
+		else
+		{
+			printSomethingGood( "The money deposit was successful" );	
+		}
+	}
+	
+	private double getMoney( double max )
+	{
+		double amount = 0;
+		do {
+			System.out.println( "Please enter the desired amount:" );
+			while( ! userInput.hasNextDouble() )
+			{
+				userInput.next();
+				System.out.println( "Your input has to be a number" );
+			}
+			amount = userInput.nextDouble();
+			userInput.nextLine();
+			if( amount > max )
+			{
+				printSomethingBad( "You do not have that much funds" );
+			}
+			if( amount <= 0 )
+			{
+				printSomethingBad( "Your desired amount has to be positive" );
+			}
+		}while( amount <= 0 || amount > max );
+		
+		return amount;
+	}
+	
 	
 	private boolean validateUsername( String username )
 	{
