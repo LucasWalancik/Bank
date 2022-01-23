@@ -7,6 +7,15 @@ public class Account
 	private double funds;
 	private int isAccepted;
 	
+	public Account()
+	{
+		
+	}
+	
+	public Account( int ID )
+	{
+		this.id = ID;
+	}
 	public Account( String name, double funds, int isAccepted )
 	{
 		this.name = name;

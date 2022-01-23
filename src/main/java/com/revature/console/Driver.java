@@ -2,6 +2,7 @@ package com.revature.console;
 
 import com.revature.controllers.AccountController;
 import com.revature.controllers.CustomerController;
+import com.revature.controllers.EmployeeController;
 import com.revature.models.Bank;
 import com.revature.models.User;
 
@@ -14,6 +15,7 @@ public class Driver
 		Javalin app = Javalin.create().start(7070);
 		CustomerController cc = new CustomerController( app );
 		AccountController ac = new AccountController( app );
+		EmployeeController ec = new EmployeeController( app );
 		Bank LWBank = new Bank();
 		int userOption = LWBank.mainMenu();
 		switch( userOption )

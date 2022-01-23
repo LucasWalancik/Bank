@@ -1,10 +1,7 @@
 package com.revature.controllers;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.revature.dao.ConnectionManager;
 import com.revature.dao.UserDAO;
 import com.revature.models.User;
 
@@ -33,6 +30,10 @@ public class CustomerController
 			User customerToUpdate = ctx.bodyAsClass( User.class );
 			String username = customerToUpdate.getUsername();
 			String password = customerToUpdate.getPassword();
+			if( null == username || null == password )
+			{
+				throw new Exception( "Username or password is null" );
+			}
 			int ID = Integer.parseInt( ctx.pathParam( "ID" ) );
 			User userToUpdate = UserDAO.getUserByID( ID );
 			if( null == userToUpdate )
@@ -73,6 +74,10 @@ public class CustomerController
 			User newCustomer = ctx.bodyAsClass( User.class );
 			String username = newCustomer.getUsername();
 			String password = newCustomer.getPassword();
+			if( null == username || null == password )
+			{
+				throw new Exception( "Username or password is null" );
+			}
 			boolean userExists = UserDAO.isUsernameTaken( username );
 			if( userExists )
 			{
@@ -129,7 +134,7 @@ public class CustomerController
 	
 	public Handler getCustomersList = ctx -> {
 		
-		ArrayList<User> customers = UserDAO.getEveryCustomer();
+		ArrayList<User> customers = UserDAO.getEverySchmuck( 1 );
 		if( null == customers )
 		{
 			ctx.result( "404 No customers in my database" );

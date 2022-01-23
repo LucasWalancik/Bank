@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 public class Bank 
 {
 	private static final Logger logger = LogManager.getLogger( Bank.class );
-	private int numberOfClients;
+	//private int numberOfClients;
 	Scanner userInput;
 	User loggedInUser;
 	
@@ -352,7 +352,7 @@ public class Bank
 	public void showAllCustomerAccounts()
 	{
 		printMenu( "Viewing customer accounts" );
-		ArrayList<User> customerAccounts = UserDAO.getEveryCustomer();
+		ArrayList<User> customerAccounts = UserDAO.getEverySchmuck( 1 );
 		if( null == customerAccounts )
 		{
 			System.out.println( "There are no customers" );

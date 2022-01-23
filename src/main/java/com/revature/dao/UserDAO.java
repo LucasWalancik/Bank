@@ -98,13 +98,14 @@ public class UserDAO
 	}
 	
 	
-	public static ArrayList<User> getEveryCustomer()
+	public static ArrayList<User> getEverySchmuck( int schmuckType )
 	{
 		try
 		{
 			Connection c = ConnectionManager.getConnection();
-			String sql = "SELECT * FROM users WHERE type = 1";
+			String sql = "SELECT * FROM users WHERE type = ?";
 			PreparedStatement statement = c.prepareStatement( sql );
+			statement.setInt( 1, schmuckType );
 			ResultSet results = statement.executeQuery();
 			if( ! results.next() )
 			{

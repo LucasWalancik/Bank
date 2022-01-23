@@ -12,6 +12,33 @@ import com.revature.models.User;
 
 public class AccountDAO
 {
+	
+	public static boolean updateAccount( int ID, String newName )
+	{
+		try
+		{
+			Connection c = ConnectionManager.getConnection();
+			String sql = "UPDATE accounts SET name = ? WHERE id = ?";
+			PreparedStatement statement = c.prepareStatement( sql );
+			statement.setString( 1, newName );
+			statement.setInt( 2, ID );
+			int rowsAffected = statement.executeUpdate();
+			if( 1 == rowsAffected )
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		catch( SQLException e )
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	public static Account getAccountByID( int ID )
 	{
 		try
@@ -41,21 +68,27 @@ public class AccountDAO
 		}
 	}
 	
-	public static void deactivateAccount( Account account )
-	{
-		try
-		{
+	
+	
+	public static boolean deactivateAccount( Account account ){
+		try{
+			
 			Connection c = ConnectionManager.getConnection();
 			String sql = "UPDATE accounts ";
 			sql += "SET is_accepted = 0 ";
 			sql += "WHERE id = ?";
 			PreparedStatement statement = c.prepareStatement( sql );
 			statement.setInt( 1, account.getId() );
-			statement.executeUpdate();
-		}
-		catch( SQLException e )
-		{
+			int rowsAffected = statement.executeUpdate();
+			
+			if( 1 == rowsAffected ){
+				return true;
+			}else{
+				return false;
+			}
+		}catch( SQLException e ){
 			e.printStackTrace();
+			return false;
 		}
 	}
 	
@@ -80,7 +113,7 @@ public class AccountDAO
 	}
 	
 	
-	public static void deleteAccount( Account account )
+	public static boolean deleteAccount( Account account )
 	{
 		try
 		{
@@ -89,12 +122,19 @@ public class AccountDAO
 			sql += "WHERE id = ?";
 			PreparedStatement statement = c.prepareStatement( sql );
 			statement.setInt( 1, account.getId() );
-			statement.executeUpdate();
-			
+			if( 1 == statement.executeUpdate() )
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 		catch( SQLException e )
 		{
 			e.printStackTrace();
+			return false;
 		}
 	}
 	
@@ -300,7 +340,7 @@ public class AccountDAO
 		}
 	}
 
-	public static void saveAccount( Account accountToSave, int...ownerIds )
+	public static boolean saveAccount( Account accountToSave, int...ownerIds )
 	{
 		try 
 		{
@@ -325,11 +365,12 @@ public class AccountDAO
 				preparedStatement.setInt( 2, accountId );
 				preparedStatement.executeUpdate();
 			}
-
+			return true;
 		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
+			return false;
 		}
 	}
 }
