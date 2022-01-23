@@ -1,12 +1,19 @@
 package com.revature.console;
 
+import com.revature.controllers.AccountController;
+import com.revature.controllers.CustomerController;
 import com.revature.models.Bank;
 import com.revature.models.User;
+
+import io.javalin.Javalin;
 
 public class Driver
 {
 	public static void main( String[] args )
 	{
+		Javalin app = Javalin.create().start(7070);
+		CustomerController cc = new CustomerController( app );
+		AccountController ac = new AccountController( app );
 		Bank LWBank = new Bank();
 		int userOption = LWBank.mainMenu();
 		switch( userOption )
@@ -25,11 +32,11 @@ public class Driver
 				break;
 				
 			case 2:
-				//LWBank.employeeMenu();
+				LWBank.employeeMenu();
 				break;
 				
 			case 999:
-				//LWBank.adminMenu();
+				LWBank.adminMenu();
 				break;
 			}
 			break;
@@ -37,6 +44,7 @@ public class Driver
 		case 3:
 			return;
 		}
+		System.out.println( "Goodbye" );
 	}
 
 }

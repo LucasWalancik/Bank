@@ -14,7 +14,7 @@ public class Account
 		this.isAccepted = isAccepted;
 	}
 	
-	public Account( String name, double funds, int isAccepted, int id )
+	public Account( int id, String name, double funds, int isAccepted )
 	{
 		this.name = name;
 		this.funds = funds;
@@ -22,6 +22,10 @@ public class Account
 		this.id = id;
 	}
 
+	public void setFunds( double funds )
+	{
+		this.funds = funds;
+	}
 	public String getName()
 	{
 		return this.name;
